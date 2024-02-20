@@ -7,39 +7,52 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-    <script src="js/vue.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/vue.js" defer></script>
+    <script src="js/main.js" defer></script>
+
 </head>
 <body>
 <div id="app">
-     <h1>Кабан доска</h1>
-     <div class="column">
-         <h2>Запланировали 🐷</h2>
-         <form @submit.prevent="addTask">
-             <p>Создай меня</p>
-             <label for="createdAt">Дата создания:</label>
-             <input id="createdAt" type="date" v-model="newTask.createdAt">
+    <h1>Кабан доска</h1>
+    <div class="column">
+        <h2>Запланировали 🐷</h2>
+        <form @submit.prevent="addTask">
+            <p>Создай меня</p>
 
-             <label for="title">Заголовок задачи:</label>
-             <input id="title" type="text" v-model="newTask.title">
 
-             <label for="description">Описание задачи:</label>
-             <textarea id="description" v-model="newTask.description"></textarea>
+            <label for="title">Заголовок задачи:</label>
+            <input id="title" type="text" v-model="newTask.title">
 
-             <label for="deadline">Дэдлайн:</label>
-             <input id="deadline" type="date" v-model="newTask.deadline">
-             <button type="submit">Добавить задачу</button>
-         </form>
-     </div>
-     <div class="column">
-         <h2>Работаем 🚬</h2>
-     </div>
-     <div class="column">
-         <h2>Тестируем 🔨</h2>
-     </div>
-     <div class="column">
-         <h2>Выполнили ⚰️</h2>
-     </div>
+            <label for="description">Описание задачи:</label>
+            <textarea id="description" v-model="newTask.description"></textarea>
+
+            <label for="deadline">Дэдлайн:</label>
+            <input id="deadline" type="date" v-model="newTask.deadline">
+
+            <button type="submit">Добавить задачу</button>
+        </form>
+
+        <div class="card" v-for="(task, index) in plannedTasks" :key="index">
+            <p class = "Header_card">Карточка задачки🐵 </p>
+            <h3>{{ task.title }}</h3>
+            <p>{{ task.description }}</p>
+            <p>Дата создания: {{ task.createdAt }}</p>
+            <p>Дэдлайн: {{ task.deadline }}</p>
+            <p>Последнее редактирование: {{ task.lastEdited }}</p>
+            <button class="delete-button" @click="deleteTask(index)">Удалить</button>
+        </div>
     </div>
+
+</div>
+<div class="column">
+    <h2>Работаем 🚬</h2>
+</div>
+<div class="column">
+    <h2>Тестируем 🔨</h2>
+</div>
+<div class="column">
+    <h2>Выполнили ⚰️</h2>
+</div>
+</div>
 </body>
 </html>
