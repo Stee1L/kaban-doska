@@ -1,0 +1,33 @@
+*{
+    font-family: "Rubik";
+    font-weight: 300;
+    font-style: normal;
+}
+
+body {
+    display: flex;
+    justify-content: space-around;
+}
+
+#app {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.column {
+
+    margin: 15px;
+    padding: 15px;
+    border: 2px solid #2C3041;
+    border-radius: 15px;
+}
+
+form {
+    margin: 15px;
+    padding: 15px;
+    border: 2px solid #2C3041;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+}
