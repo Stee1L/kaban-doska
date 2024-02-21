@@ -39,20 +39,33 @@
             <p>Дата создания: {{ task.createdAt }}</p>
             <p>Дэдлайн: {{ task.deadline }}</p>
             <p>Последнее редактирование: {{ task.lastEdited }}</p>
+            <button @click="moveToInProgress(index)">В работу</button>
             <button class="delete-button" @click="deleteTask(index)">Удалить</button>
+            <button @click="startEditing(index)">Редактировать</button>
         </div>
+    </div>
+    <div class="column">
+        <h2>Работаем 🚬</h2>
+        <div class="card" v-for="(task, index) in inProgressTasks" :key="index">
+        <div>
+            <p class = "Header_card">Карточка задачки🐵 </p>
+            <h3>{{ task.title }}</h3>
+            <p>{{ task.description }}</p>
+            <p>Дэдлайн: {{ task.deadline }}</p>
+            <p>Дата создания: {{ task.createdAt }}</p>
+            <p>Последнее редактирование: {{ task.lastEdited }}</p>
+            <button @click="startEditing(index)">Редактировать</button>
+        </div>
+
     </div>
 
 </div>
-<div class="column">
-    <h2>Работаем 🚬</h2>
-</div>
-<div class="column">
-    <h2>Тестируем 🔨</h2>
-</div>
-<div class="column">
-    <h2>Выполнили ⚰️</h2>
-</div>
+    <div class="column">
+        <h2>Тестируем 🔨</h2>
+    </div>
+    <div class="column">
+        <h2>Выполнили ⚰️</h2>
+    </div>
 </div>
 </body>
 </html>
