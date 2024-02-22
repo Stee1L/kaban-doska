@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
     <script src="js/vue.js" defer></script>
     <script src="js/main.js" defer></script>
-
 </head>
 <body>
 <div id="app">
@@ -18,63 +17,87 @@
         <h2>Запланировали 🐷</h2>
         <form @submit.prevent="addTask">
             <p>Создай меня</p>
-
-
             <label for="title">Заголовок задачи:</label>
             <input id="title" type="text" v-model="newTask.title">
-
             <label for="description">Описание задачи:</label>
             <textarea id="description" v-model="newTask.description"></textarea>
-
             <label for="deadline">Дэдлайн:</label>
             <input id="deadline" type="date" v-model="newTask.deadline">
-
             <button type="submit">Добавить задачу</button>
         </form>
-
         <div class="card" v-for="(task, index) in plannedTasks" :key="index">
-            <p class = "Header_card">Карточка задачки🐵 </p>
-            <h3>{{ task.title }}</h3>
-            <p>{{ task.description }}</p>
-            <p>Дата создания: {{ task.createdAt }}</p>
-            <p>Дэдлайн: {{ task.deadline }}</p>
-            <p>Последнее редактирование: {{ task.lastEdited }}</p>
-            <button @click="moveToInProgress(index)">В работу</button>
-            <button class="delete-button" @click="deleteTask(index)">Удалить</button>
-            <button @click="startEditing(index)">Редактировать</button>
-        </div>
-    </div>
-    <div class="column">
-        <h2>Работаем 🚬</h2>
-        <div class="card" v-for="(task, index) in inProgressTasks" :key="index">
-        <div>
-            <p class = "Header_card">Карточка задачки🐵 </p>
-            <h3>{{ task.title }}</h3>
-            <p>{{ task.description }}</p>
-            <p>Дэдлайн: {{ task.deadline }}</p>
-            <p>Дата создания: {{ task.createdAt }}</p>
-            <p>Последнее редактирование: {{ task.lastEdited }}</p>
-            <p v-if="task.returnReason">Причина возврата: {{ task.returnReason }}</p>
-            <button @click="startEditing(index)">Редактировать</button>
-            <button @click="moveToTesting(index)">В тестирование</button>
-        </div>
-
-    </div>
-
-</div>
-    <div class="column">
-        <h2>Тестируем 🔨</h2>
-        <div class="card" v-for="(task, index) in testingTasks" :key="index">
-            <div>
-                <p class = "Header_card">Карточка задачки🐵 </p>
+            <p class="Header_card">Карточка задачки🐵 </p>
+            <template v-if="!task.isEditing">
                 <h3>{{ task.title }}</h3>
                 <p>{{ task.description }}</p>
                 <p>Дэдлайн: {{ task.deadline }}</p>
                 <p>Дата создания: {{ task.createdAt }}</p>
                 <p>Последнее редактирование: {{ task.lastEdited }}</p>
-                <button @click="startEditing(index)">Редактировать</button>
-                <button @click="returnToInProgress(index)">Вернуть в работу</button>
-                <button @click="moveToCompleted(index, 'testingTasks')">Выполнено</button>
+                <button @click="moveToInProgress(index)">В работу</button>
+                <button @click="startEditing('plannedTasks', index)">Редактировать</button>
+            </template>
+            <template v-else>
+                <label for="editTitle">Заголовок задачи:</label>
+                <input id="editTitle" type="text" v-model="task.title">
+                <label for="editDescription">Описание задачи:</label>
+                <textarea id="editDescription" v-model="task.description"></textarea>
+                <label for="editDeadline">Дэдлайн:</label>
+                <input id="editDeadline" type="date" v-model="task.deadline">
+                <button @click="saveEdit(index, 'plannedTasks')">Сохранить</button>
+            </template>
+        </div>
+    </div>
+    <div class="column">
+        <h2>Работаем 🚬</h2>
+        <div class="card" v-for="(task, index) in inProgressTasks" :key="index">
+            <div>
+                <p class="Header_card">Карточка задачки🐵 </p>
+                <template v-if="!task.isEditing">
+                    <h3>{{ task.title }}</h3>
+                    <p>{{ task.description }}</p>
+                    <p>Дэдлайн: {{ task.deadline }}</p>
+                    <p>Дата создания: {{ task.createdAt }}</p>
+                    <p>Последнее редактирование: {{ task.lastEdited }}</p>
+                    <p v-if="task.returnReason">Причина возврата: {{ task.returnReason }}</p>
+                    <button @click="startEditing('inProgressTasks', index)">Редактировать</button>
+                    <button @click="moveToTesting(index)">В тестирование</button>
+                </template>
+                <template v-else>
+                    <label for="editTitle">Заголовок задачи:</label>
+                    <input id="editTitle" type="text" v-model="task.title">
+                    <label for="editDescription">Описание задачи:</label>
+                    <textarea id="editDescription" v-model="task.description"></textarea>
+                    <label for="editDeadline">Дэдлайн:</label>
+                    <input id="editDeadline" type="date" v-model="task.deadline">
+                    <button @click="saveEdit(index, 'inProgressTasks')">Сохранить</button>
+                </template>
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <h2>Тестируем 🔨</h2>
+        <div class="card" v-for="(task, index) in testingTasks" :key="index">
+            <div>
+                <p class="Header_card">Карточка задачки🐵 </p>
+                <template v-if="!task.isEditing">
+                    <h3>{{ task.title }}</h3>
+                    <p>{{ task.description }}</p>
+                    <p>Дэдлайн: {{ task.deadline }}</p>
+                    <p>Дата создания: {{ task.createdAt }}</p>
+                    <p>Последнее редактирование: {{ task.lastEdited }}</p>
+                    <button @click="startEditing('testingTasks', index)">Редактировать</button>
+                    <button @click="returnToInProgress(index)">Вернуть в работу</button>
+                    <button @click="moveToCompleted(index, 'testingTasks')">Выполнено</button>
+                </template>
+                <template v-else>
+                    <label for="editTitle">Заголовок задачи:</label>
+                    <input id="editTitle" type="text" v-model="task.title">
+                    <label for="editDescription">Описание задачи:</label>
+                    <textarea id="editDescription" v-model="task.description"></textarea>
+                    <label for="editDeadline">Дэдлайн:</label>
+                    <input id="editDeadline" type="date" v-model="task.deadline">
+                    <button @click="saveEdit(index, 'testingTasks')">Сохранить</button>
+                </template>
             </div>
         </div>
     </div>
@@ -88,8 +111,7 @@
                 <p>Дэдлайн: {{ task.deadline }}</p>
                 <p>Дата создания: {{ task.createdAt }}</p>
                 <p>Последнее редактирование: {{ task.lastEdited }}</p>
-                <p>Статус: {{ task.status }}</p> <!-- Добавлено отображение статуса выполнения -->
-
+                <p>Статус: {{ task.status }}</p>
             </div>
         </div>
     </div>

@@ -20,106 +20,158 @@ new Vue({
     methods: {
         addTask() {
             if (this.editingTaskIndex !== -1) {
-                this.plannedTasks.splice(this.editingTaskIndex, 1, {
-                    title: this.newTask.title,
-                    description: this.newTask.description,
-                    deadline: this.newTask.deadline,
-                    createdAt: this.newTask.createdAt,
-                    lastEdited: this.newTask.lastEdited,
-                });
+                this.updateTask('plannedTasks');
                 this.editingTaskIndex = -1;
             } else {
                 this.plannedTasks.push({
-                    title: this.newTask.title,
-                    description: this.newTask.description,
-                    deadline: this.newTask.deadline,
-                    createdAt: this.newTask.createdAt,
-                    lastEdited: this.newTask.lastEdited,
+                    ...this.newTask,
+                    isEditing: false,
                 });
             }
 
-            this.newTask.title = '';
-            this.newTask.description = '';
-            this.newTask.deadline = '';
+            this.resetNewTask();
         },
-        deleteTask(taskIndex) {
-            this.plannedTasks.splice(taskIndex, 1);
+        deleteTask(column, taskIndex) {
+            if (column === 'plannedTasks') {
+                this.plannedTasks.splice(taskIndex, 1);
+            } else if (column === 'inProgressTasks') {
+                this.inProgressTasks.splice(taskIndex, 1);
+            } else if (column === 'testingTasks') {
+                this.testingTasks.splice(taskIndex, 1);
+            } else if (column === 'completedTasks') {
+                this.completedTasks.splice(taskIndex, 1);
+            }
         },
-        startEditing(index) {
-            this.editingTaskIndex = index;
-            const taskToEdit = this.plannedTasks[index];
-
-            this.newTask.title = taskToEdit.title;
-            this.newTask.description = taskToEdit.description;
-            this.newTask.deadline = taskToEdit.deadline;
+        startEditing(column, index) {
+            let tasks;
+            if (column === 'plannedTasks') {
+                tasks = this.plannedTasks;
+            } else if (column === 'inProgressTasks') {
+                tasks = this.inProgressTasks;
+            } else if (column === 'testingTasks') {
+                tasks = this.testingTasks;
+            } else {
+                console.error("Неподдерживаемый столбец");
+                return;
+            }
+            this.endEditing(tasks);
+            this.beginEditing(tasks, index);
+        },
+        saveEdit(index, column) {
+            if (column === 'plannedTasks') {
+                this.saveEditForTask(index, this.plannedTasks);
+            } else if (column === 'inProgressTasks') {
+                this.saveEditForTask(index, this.inProgressTasks);
+            } else if (column === 'testingTasks') {
+                this.saveEditForTask(index, this.testingTasks);
+            }
         },
         moveToInProgress(index) {
-            if (this.editingTaskIndex !== -1) {
-                console.error("Завершите редактирование перед перемещением.");
-                return;
-            }
-
-            const taskToMove = this.plannedTasks[index];
-
-            this.plannedTasks.splice(index, 1);
-
-            this.inProgressTasks.push(taskToMove);
+            this.moveTask(index, 'plannedTasks', 'inProgressTasks');
         },
         moveToTesting(index) {
-            if (this.editingTaskIndex !== -1) {
-                console.error("Завершите редактирование перед перемещением.");
-                return;
-            }
-
-            const taskToMove = this.inProgressTasks[index];
-
-            this.inProgressTasks.splice(index, 1);
-
-            this.testingTasks.push(taskToMove);
+            this.moveTask(index, 'inProgressTasks', 'testingTasks');
         },
         returnToInProgress(index) {
-            const taskToReturn = this.testingTasks[index];
-
-
             const returnReason = prompt("Укажите причину возврата в работу:");
-
             if (returnReason) {
+                const taskToReturn = this.testingTasks[index];
                 this.testingTasks.splice(index, 1);
                 taskToReturn.returnReason = returnReason;
                 this.inProgressTasks.push(taskToReturn);
             }
         },
         moveToCompleted(index, column) {
-            let taskToComplete;
-
-            if (column === 'inProgressTasks') {
-                taskToComplete = this.inProgressTasks[index];
-            } else if (column === 'testingTasks') {
-                taskToComplete = this.testingTasks[index];
-            } else {
-                console.error("Неподдерживаемый столбец");
-                return;
+            const taskToComplete = this.getTaskByColumnAndIndex(column, index);
+            this.completeTask(column, index, taskToComplete);
+        },
+        resetNewTask() {
+            this.newTask = {
+                title: '',
+                description: '',
+                deadline: '',
+                createdAt: new Date().toLocaleString(),
+                lastEdited: null,
+                returnReason: '',
+            };
+        },
+        updateTask(column) {
+            this.plannedTasks.splice(this.editingTaskIndex, 1, {
+                ...this.newTask,
+                isEditing: false,
+            });
+        },
+        endEditing(tasks) {
+            tasks.forEach((task) => {
+                task.isEditing = false;
+            });
+        },
+        beginEditing(tasks, index) {
+            const taskToEdit = tasks[index];
+            if (taskToEdit) {
+                taskToEdit.isEditing = true;
+                this.editingTaskIndex = index;
             }
-
-            const currentDateTime = new Date();
-            const deadlineDateTime = new Date(taskToComplete.deadline);
-
-
-            if (currentDateTime > deadlineDateTime) {
-                taskToComplete.status = 'Просрочено';
-            } else {
-                taskToComplete.status = 'Выполнено в срок';
-            }
-
-
-            if (column === 'inProgressTasks') {
+        },
+        saveEditForTask(index, tasks) {
+            tasks[index].lastEdited = new Date().toLocaleString();
+            tasks[index].isEditing = false;
+        },
+        moveTask(index, sourceColumn, destinationColumn) {
+            const taskToMove = this.getTaskByColumnAndIndex(sourceColumn, index);
+            this.removeTask(index, sourceColumn);
+            this.addTaskToColumn(taskToMove, destinationColumn);
+        },
+        removeTask(index, column) {
+            if (column === 'plannedTasks') {
+                this.plannedTasks.splice(index, 1);
+            } else if (column === 'inProgressTasks') {
                 this.inProgressTasks.splice(index, 1);
             } else if (column === 'testingTasks') {
                 this.testingTasks.splice(index, 1);
+            } else if (column === 'completedTasks') {
+                this.completedTasks.splice(index, 1);
+            }
+        },
+        addTaskToColumn(task, column) {
+            if (column === 'plannedTasks') {
+                this.plannedTasks.push(task);
+            } else if (column === 'inProgressTasks') {
+                this.inProgressTasks.push(task);
+            } else if (column === 'testingTasks') {
+                this.testingTasks.push(task);
+            } else if (column === 'completedTasks') {
+                this.completedTasks.push(task);
+            }
+        },
+        getTaskByColumnAndIndex(column, index) {
+            if (column === 'plannedTasks') {
+                return this.plannedTasks[index];
+            } else if (column === 'inProgressTasks') {
+                return this.inProgressTasks[index];
+            } else if (column === 'testingTasks') {
+                return this.testingTasks[index];
+            } else if (column === 'completedTasks') {
+                return this.completedTasks[index];
+            }
+        },
+        completeTask(column, index, task) {
+            const currentDateTime = new Date();
+            const deadlineDateTime = new Date(task.deadline);
+
+            if (currentDateTime > deadlineDateTime) {
+                task.status = 'Просрочено';
+            } else {
+                task.status = 'Выполнено в срок';
             }
 
-            this.completedTasks.push(taskToComplete);
+            // Добавьте свойство isEditing к задаче при её создании
+            this.completedTasks.push({
+                ...task,
+                isEditing: false,
+            });
+
+            this.removeTask(index, column);
         },
     },
-
 });
