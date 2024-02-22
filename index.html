@@ -54,7 +54,9 @@
             <p>Дэдлайн: {{ task.deadline }}</p>
             <p>Дата создания: {{ task.createdAt }}</p>
             <p>Последнее редактирование: {{ task.lastEdited }}</p>
+            <p v-if="task.returnReason">Причина возврата: {{ task.returnReason }}</p>
             <button @click="startEditing(index)">Редактировать</button>
+            <button @click="moveToTesting(index)">В тестирование</button>
         </div>
 
     </div>
@@ -62,9 +64,34 @@
 </div>
     <div class="column">
         <h2>Тестируем 🔨</h2>
+        <div class="card" v-for="(task, index) in testingTasks" :key="index">
+            <div>
+                <p class = "Header_card">Карточка задачки🐵 </p>
+                <h3>{{ task.title }}</h3>
+                <p>{{ task.description }}</p>
+                <p>Дэдлайн: {{ task.deadline }}</p>
+                <p>Дата создания: {{ task.createdAt }}</p>
+                <p>Последнее редактирование: {{ task.lastEdited }}</p>
+                <button @click="startEditing(index)">Редактировать</button>
+                <button @click="returnToInProgress(index)">Вернуть в работу</button>
+                <button @click="moveToCompleted(index, 'testingTasks')">Выполнено</button>
+            </div>
+        </div>
     </div>
     <div class="column">
         <h2>Выполнили ⚰️</h2>
+        <div class="card" v-for="(task, index) in completedTasks" :key="index">
+            <div>
+                <p class="Header_card">Карточка задачки🐵 </p>
+                <h3>{{ task.title }}</h3>
+                <p>{{ task.description }}</p>
+                <p>Дэдлайн: {{ task.deadline }}</p>
+                <p>Дата создания: {{ task.createdAt }}</p>
+                <p>Последнее редактирование: {{ task.lastEdited }}</p>
+                <p>Статус: {{ task.status }}</p> <!-- Добавлено отображение статуса выполнения -->
+
+            </div>
+        </div>
     </div>
 </div>
 </body>
