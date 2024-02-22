@@ -66,6 +66,9 @@ new Vue({
                 this.saveEditForTask(index, this.testingTasks);
             }
         },
+        deleteTask(taskIndex) {
+            this.plannedTasks.splice(taskIndex, 1);
+        },
         moveToInProgress(index) {
             this.moveTask(index, 'plannedTasks', 'inProgressTasks');
         },

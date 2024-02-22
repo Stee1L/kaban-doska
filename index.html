@@ -35,6 +35,7 @@
                 <p>Последнее редактирование: {{ task.lastEdited }}</p>
                 <button @click="moveToInProgress(index)">В работу</button>
                 <button @click="startEditing('plannedTasks', index)">Редактировать</button>
+                <button class="delete-button" @click="deleteTask(index)">Удалить</button>
             </template>
             <template v-else>
                 <label for="editTitle">Заголовок задачи:</label>
