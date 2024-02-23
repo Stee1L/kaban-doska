@@ -17,6 +17,13 @@ new Vue({
             editingTaskIndex: -1,
         };
     },
+    computed: {
+        isTaskValid() {
+            return this.newTask.title.trim() !== '' &&
+                this.newTask.description.trim() !== '' &&
+                this.newTask.deadline.trim() !== '';
+        }
+    },
     methods: {
         addTask() {
             if (this.editingTaskIndex !== -1) {
@@ -168,7 +175,7 @@ new Vue({
                 task.status = 'Выполнено в срок';
             }
 
-            // Добавьте свойство isEditing к задаче при её создании
+
             this.completedTasks.push({
                 ...task,
                 isEditing: false,

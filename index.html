@@ -6,13 +6,15 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+          rel="stylesheet">
     <script src="js/vue.js" defer></script>
     <script src="js/main.js" defer></script>
 </head>
 <body>
 <div id="app">
-    <h1>Кабан доска</h1>
+    <h1>🐗Кабан доска🐗</h1>
+    <div class = "columns">
     <div class="column">
         <h2>Запланировали 🐷</h2>
         <form @submit.prevent="addTask">
@@ -23,7 +25,7 @@
             <textarea id="description" v-model="newTask.description"></textarea>
             <label for="deadline">Дэдлайн:</label>
             <input id="deadline" type="date" v-model="newTask.deadline">
-            <button type="submit">Добавить задачу</button>
+            <button type="submit" :disabled="!isTaskValid">Добавить задачу</button>
         </form>
         <div class="card" v-for="(task, index) in plannedTasks" :key="index">
             <p class="Header_card">Карточка задачки🐵 </p>
@@ -37,7 +39,7 @@
                 <button @click="startEditing('plannedTasks', index)">Редактировать</button>
                 <button class="delete-button" @click="deleteTask(index)">Удалить</button>
             </template>
-            <template v-else>
+            <template class="card" v-else>
                 <label for="editTitle">Заголовок задачи:</label>
                 <input id="editTitle" type="text" v-model="task.title">
                 <label for="editDescription">Описание задачи:</label>
@@ -50,8 +52,8 @@
     </div>
     <div class="column">
         <h2>Работаем 🚬</h2>
-        <div class="card" v-for="(task, index) in inProgressTasks" :key="index">
-            <div>
+        <div v-for="(task, index) in inProgressTasks" :key="index">
+            <div class="card">
                 <p class="Header_card">Карточка задачки🐵 </p>
                 <template v-if="!task.isEditing">
                     <h3>{{ task.title }}</h3>
@@ -77,8 +79,8 @@
     </div>
     <div class="column">
         <h2>Тестируем 🔨</h2>
-        <div class="card" v-for="(task, index) in testingTasks" :key="index">
-            <div>
+        <div v-for="(task, index) in testingTasks" :key="index">
+            <div class="card">
                 <p class="Header_card">Карточка задачки🐵 </p>
                 <template v-if="!task.isEditing">
                     <h3>{{ task.title }}</h3>
@@ -115,6 +117,7 @@
                 <p>Статус: {{ task.status }}</p>
             </div>
         </div>
+    </div>
     </div>
 </div>
 </body>
